@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- 🔹 Hace que el sitio sea responsive -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧮 The Collatz Conjecture z</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      background: linear-gradient(to bottom, #151A28, #0E111B);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-top: 10px;
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem); /* 🔹 Escalable */
+      text-align: center;
+      max-width: 900px;
+    }
+    .info {
+      max-width: 800px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: clamp(0.9rem, 1.5vw, 1rem); /* 🔹 Texto flexible */
+      line-height: 1.6;
+    }
+    .input-box {
+      margin: 15px 0;
+      text-align: center;
+    }
+    input {
+      padding: 8px;
+      font-size: clamp(0.9rem, 1.5vw, 1rem); /* 🔹 Escalable */
+      text-align: center;
+      border: none;
+      border-radius: 6px;
+      outline: none;
+      width: clamp(140px, 25vw, 200px); /* 🔹 Se adapta */
+    }
+    button {
+      padding: 8px 14px;
+      margin-left: 10px;
+      font-size: clamp(0.9rem, 1.5vw, 1rem);
+      font-weight: bold;
+      color: white;
+      background: black;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #333;
+    }
+    .resultado {
+      max-width: 800px;
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 "The Collatz Conjecture: The Hardest Mathematical Problem to Solve"</h1>
+
+  <div class="info">
+    <p><b>Exploring the Collatz Conjecture: The Mathematical Mystery of 3n + 1</b></p>
+    <p>The <b>Collatz conjecture</b>, also known as the <i>problem 3n + 1</i>, It is a mathematical enigma that has challenged mathematicians since 1937. The rule is simple:</p>
+    <ul>
+      <li>If a positive integer is even, it is divided by 2.</li>
+      <li>If it is odd, multiply by 3 and add 1.</li>
+    </ul>
+    <p>The process is repeated until the number 1 is reached. Surprisingly, <b>All numbers tested to date end in 1</b>, iIncluding gigantic figures like 2<sup>68</sup> (more than 295 quintillion).</p>
+    <p>Despite its apparent simplicity, demonstrating that this occurs for <b>all positive integers</b> It's extremely difficult. Some numbers can rise to astronomical levels before descending, making exhaustive brute-force analysis impossible.</p>
+    <p><b>Datos curiosos:</b></p>
+    <ul>
+      <li>The Collatz sequence has been verified for more than 10<sup>20</sup> numbers.</li>
+      <li>Some numbers, such as 27, produce surprisingly long sequences with unexpected swings.</li>
+      <li>Although it has never been formally demonstrated, its simplicity and consistency of results make it a classic mathematical mystery.</li>
+    </ul>
+    <p>In short, the Collatz conjecture is <b>easy to understand, but almost impossible to prove</b>, fascinating mathematicians and curious people around the world.</p>
+  </div>
+
+  <div class="input-box">
+    <label for="numero">Ingresa un número: </label>
+    <input type="text" id="numero" placeholder="Ej: 27, 2^68, 2⁶⁸">
+    <button onclick="generarSecuencia()">Generate sequence</button>
+  </div>
+
+  <div class="resultado" id="resultado"></div>
+
+  <script>
+    const MAX_LIMIT = 2n ** 68n; // límite máximo (BigInt)
+
+    const superindiceMapa = {
+      "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4",
+      "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9"
+    };
+
+    function parseEntrada(valor) {
+      valor = valor.trim();
+
+      if (valor.includes("^")) {
+        const [base, exp] = valor.split("^").map(x => x.trim());
+        return BigInt(base) ** BigInt(exp);
+      }
+
+      let base = "";
+      let exp = "";
+      for (let char of valor) {
+        if (char in superindiceMapa) {
+          exp += superindiceMapa[char];
+        } else {
+          base += char;
+        }
+      }
+      if (exp) {
+        return BigInt(base) ** BigInt(exp);
+      }
+
+      return BigInt(valor);
+    }
+
+    function collatzSequence(n) {
+      let sequence = [n];
+      while (n !== 1n) {
+        n = (n % 2n === 0n) ? n / 2n : n * 3n + 1n;
+        sequence.push(n);
+      }
+      return sequence;
+    }
+
+    function generarSecuencia() {
+      const entrada = document.getElementById("number").value;
+      const salida = document.getElementById("result");
+
+      let num;
+      try {
+        num = parseEntrada(entrada);
+      } catch {
+        salida.textContent = "⚠️ Enter a valid number (ej: 27, 2^68, 2⁶⁸).";
+        return;
+      }
+
+      if (num <= 0n) {
+        salida.textContent = "⚠️ Enter a positive integer.";
+        return;
+      }
+
+      if (num > MAX_LIMIT) {
+        salida.textContent = "⚠️ The number cannot be greater than 2^68.";
+        return;
+      }
+
+      const secuencia = collatzSequence(num);
+      const pasos = secuencia.length - 1;
+      const maximo = secuencia.reduce((a, b) => a > b ? a : b, 0n);
+
+      let texto = `🔢 Initial number: ${num}\n📈 Steps: ${pasos}\n📊 Maximum reached: ${maximo}\n\n`;
+      texto += secuencia.join(" → ");
+
+      const ultimaParte = secuencia.slice(-3).map(n => n.toString());
+if (ultimaParte.join(" → ") === "4 → 2 → 1") {
+  texto += "\n\n✅ Here it ends: 4 → 2 → 1";
+  texto += "\nℹ️ Why?: The sequence always ends in the cycle 4 → 2 → 1, which repeats indefinitely.";
+  texto += "\nThis happens because when you reach 1, the rule says that since it is odd: 1 × 3 + 1 = 4.";
+  texto += "\nthen 4 ÷ 2 = 2 and then 2 ÷ 2 = 1.";
+  texto += "\nThis way the same cycle starts over and over again without generating new numbers.";
+}
+
+
+
+      salida.textContent = texto;
+    }
+  </script>
+</body>
+</html>
